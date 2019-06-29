@@ -10,13 +10,6 @@
                 {$table_title.'列表'}
             </header>
             <div class="row wrapper">
-                <!--<div class="col-sm-5 m-b-xs">-->
-                    <!--<select class="input-sm form-control input-s-sm inline v-middle">-->
-                        <!--<option value="1">删除</option>-->
-                        <!--<option value="3">导出</option>-->
-                    <!--</select>-->
-                    <!--<button class="btn btn-sm btn-default">Apply</button>-->
-                <!--</div>-->
                 <div class="col-sm-3">
                     <div class="input-group">
                         <input type="text" class="input-sm form-control" placeholder="Search">
@@ -30,7 +23,6 @@
                 <table class="table table-striped b-t b-light">
                     <thead>
                         <tr>
-                            <!--<th style="width:20px;"><label class="checkbox m-n i-checks"><input type="checkbox"><i></i></label></th>-->
                             <th>用户名</th>
                             <th>创建日期</th>
                             <th style="width: 20rem;">操作</th>
@@ -39,13 +31,12 @@
                     <tbody>
                     {volist name='list' id='item'}
                     <tr>
-                        <!--<td><label class="checkbox m-n i-checks"><input type="checkbox" name="post[]"><i></i></label></td>-->
                         <td>{$item.name}</td>
                         <td>{:date('Y-m-d H:i:s',$item.create_time)}</td>
                         <td>
                             <a href="#" class="btn btn-xs btn-info btn-rounded"> 查看</a>
                             <a href="#" class="btn btn-xs btn-dark btn-rounded"> 编辑</a>
-                            <a href="#" class="btn btn-xs btn-danger btn-rounded"> 删除</a>
+                            <a href="#" class="btn btn-xs btn-danger btn-rounded action-del" data-href="{:url('admin/del',['id'=>$item.id])}"> 删除</a>
                         </td>
                     </tr>
                     {/volist}
@@ -59,21 +50,58 @@
                     </div>
                     <div class="col-sm-9 text-right dataTables_wrapper text-center-xs text-xs">
                         {$list|raw}
-                        <!--&nbsp;-->
-                        <!--<div class="pull-right" id="">-->
-                            <!--<label>-->
-                                <!--<select name="" aria-controls="" class="">-->
-                                    <!--<option value="10">10</option>-->
-                                    <!--<option value="15">15</option>-->
-                                    <!--<option value="20">20</option>-->
-                                    <!--<option value="50">50</option>-->
-                                <!--</select>-->
-                                <!--&nbsp;行-->
-                            <!--</label>-->
-                        <!--</div>-->
                     </div>
                 </div>
             </footer>
         </section>
     </section>
 </section>
+
+<script>
+    $(function () {
+        $('.search-btn').on('click',function () {
+            var params = $('.filters').serialize();
+            refreshDom('{:url("admin/admin")}',params,'#adminadmin .table-responsive');
+        });
+
+        $('input[name=search_key]').bind('keydown',function(e){
+            if (e.keyCode == 13) {
+                var params = $('.filters').serialize();
+                refreshDom('{:url("admin/admin")}', params, '#adminadmin .table-responsive');
+                return false;
+            }
+        });
+
+        $('.admin_edit').on('click',function () {
+            alt('编辑管理员',$(this));
+        });
+
+        $('.admin_add').on('click',function () {
+            alt('添加管理员',$(this));
+        });
+
+        function alt(title,dom){
+            var this_e = dom;
+            var url = this_e.data('href');
+            var id = this_e.data('id');
+            var save_url = '{:url("admin/adminSaveAdd")}';
+            layui_iframe.editBuilder(title,url,function (index,layero) {
+                //获取弹出层的表单
+                var form = layer.getChildFrame('#myform', index);
+                if(id){
+                    save_url = '{:url("admin/adminSaveAdd")}'+'?id='+id;
+                }
+                ajax_request.post(save_url,form.serialize(),function (res) {
+                    if(res.is_ok == 'ok'){
+                        layer.msg(res.msg,{icon:6});
+                        layer.close(index);
+                        location.reload();//刷新页面
+                    }else{
+                        layer.msg(res.msg,{icon:5});
+                    }
+                })
+            },['800px','300px'])
+        }
+    });
+
+</script>

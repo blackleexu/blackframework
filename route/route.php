@@ -9,12 +9,8 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-Route::get('think', function () {
-    return 'hello,ThinkPHP5!';
-});
+use think\Route;
 
-Route::get('hello/:name', 'index/hello');
-
-return [
-
-];
+//Route::group('admin',function (){
+//    Route::delete('admin/delete/:id','Index/delete'); // 定义DELETE请求路由规则
+//});
